@@ -561,6 +561,19 @@ describe('app-dir action handling', () => {
     ).toBe(true)
   })
 
+  it('should support React Elements in state', async () => {
+    const browser = await next.browser('/elements')
+
+    await browser.elementByCss('[type="submit"]').click()
+
+    await retry(async () => {
+      const form = await browser.elementByCss('form')
+      await expect(form.getAttribute('aria-busy')).resolves.toBe('false')
+    })
+
+    expect(await browser.elementByCss('output').text()).toBe('Hello, Dave!')
+  })
+
   it.each(['node', 'edge'])(
     'should forward action request to a worker that contains the action handler (%s)',
     async (runtime) => {
